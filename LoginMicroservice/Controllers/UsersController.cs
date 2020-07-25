@@ -24,12 +24,12 @@ namespace LoginMicroservice.Controllers
         }
 
         [HttpGet("GetAllUsers")]
-        public IEnumerable<User> GetAllUsers(int id)
+        public IEnumerable<User> GetAllUsers()
         {
             return db.Users.ToList();
         }
 
-        [HttpGet]
+        [HttpPost("UserLogin")]
         public IActionResult Login([FromBody] User user)
         {
             if (CheckCredentials(user.Username, user.Password))
@@ -57,9 +57,13 @@ namespace LoginMicroservice.Controllers
 
                 return Ok(responseToken);
             }
+            else
+            {
+                return Unauthorized();
+            }
         }
 
-        [HttpPost]
+        [HttpPost("AddUser")]
         public IActionResult AddUser([FromBody]User userdetails)
         {
             try
@@ -74,7 +78,7 @@ namespace LoginMicroservice.Controllers
             }
         }
 
-        [HttpDelete]
+        [HttpDelete("DeleteUser/{id}")]
         public IActionResult DeleteUser(int id)
         {
             try
@@ -89,22 +93,31 @@ namespace LoginMicroservice.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult EditUser([FromBody]User userdata)
+        [HttpPut("EditUser")]
+        public IActionResult EditUser( [FromBody] User userdata)
         {
             try
             {
-                db.Entry(userdata).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
-                db.SaveChanges();
-                return StatusCode(StatusCodes.Status200OK);
+                if (db.Users.Find(userdata.Id)!= null)
+                {
+                    db.Entry(userdata).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+                    db.SaveChanges();
+                    return StatusCode(StatusCodes.Status200OK);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status204NoContent);
+                }
+                
             }
             catch (Exception e)
             {
+                System.Diagnostics.Debug.WriteLine(e);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }
 
-
+        [NonAction]
         public bool CheckCredentials(string username, string password)
         {
             var userdata = db.Users.Where(x => x.Username == username && x.Password == password).FirstOrDefault();

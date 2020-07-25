@@ -1,7 +1,7 @@
 {
   "Routes": [
     {
-      "DownstreamPathTemplate": "/api/Users",
+      "DownstreamPathTemplate": "/api/Users/GetAllUsers",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -9,13 +9,68 @@
           "Port": "44380"
         }
       ],
-      "UpstreamPathTemplate": "/Users",
+      "UpstreamPathTemplate": "/AllUsers"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/AddUser",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44380"
+        }
+      ],
+      "UpstreamPathTemplate": "/AddUser"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/EditUser",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44380"
+        }
+      ],
+      "UpstreamPathTemplate": "/EditUser"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/DeleteUser/{id}",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44380"
+        }
+      ],
+      "UpstreamPathTemplate": "/DeleteUser/{id}"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Users/UserLogin",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44380"
+        }
+      ],
+      "UpstreamPathTemplate": "/UserLogin"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Customers/GetAllCustomers",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": "44313"
+        }
+      ],
+      "UpstreamPathTemplate": "/AllCustomers",
       "AuthenticationOptions": {
         "AuthenticationProviderKey": "UserToken",
         "AllowedScopes": []
       }
     }
-    
+
   ],
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:44363/"
