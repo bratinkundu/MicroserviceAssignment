@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LoginMicroservice.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20200724065405_LoginMicroservice.Database.DatabaseContext.cs")]
-    partial class LoginMicroserviceDatabaseDatabaseContextcs
+    [Migration("20200725034152_DatabaseContext.cs")]
+    partial class DatabaseContextcs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,6 +31,9 @@ namespace LoginMicroservice.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")

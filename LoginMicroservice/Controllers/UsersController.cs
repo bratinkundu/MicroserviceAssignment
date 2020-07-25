@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Mvc;
 using LoginMicroservice.Database;
 using LoginMicroservice.Database.Entities;
+using System.Text;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace LoginMicroservice.Controllers
 {
@@ -26,13 +30,37 @@ namespace LoginMicroservice.Controllers
         }
 
         [HttpGet]
-        public User GetCredentials(int id)
+        public IActionResult Login([FromBody] User user)
         {
-            return db.Users.Where(x => x.Id == id).FirstOrDefault();
+            if (CheckCredentials(user.Username, user.Password))
+            {
+                var secretKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
+                var now = DateTime.Now;
+
+                var claim = new Claim[]
+                {
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                    new Claim(JwtRegisteredClaimNames.Iat, now.ToUniversalTime().ToString())
+                };
+
+                var token = new JwtSecurityToken(
+                    issuer: "Admin",
+                    audience: "user",
+                    claims: claim,
+                    notBefore: now,
+                    expires: now.Add(TimeSpan.FromMinutes(20)),
+                    signingCredentials: new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                var responseToken = new JwtSecurityTokenHandler().WriteToken(token);
+
+                return Ok(responseToken);
+            }
         }
 
         [HttpPost]
-        public IActionResult AddUser(User userdetails)
+        public IActionResult AddUser([FromBody]User userdetails)
         {
             try
             {
@@ -62,7 +90,7 @@ namespace LoginMicroservice.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditUser(User userdata)
+        public IActionResult EditUser([FromBody]User userdata)
         {
             try
             {
@@ -74,6 +102,14 @@ namespace LoginMicroservice.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
+        }
+
+
+        public bool CheckCredentials(string username, string password)
+        {
+            var userdata = db.Users.Where(x => x.Username == username && x.Password == password).FirstOrDefault();
+            if (userdata != null) { return true; }
+            else { return false; }
         }
     }
 }

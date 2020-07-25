@@ -9,8 +9,12 @@
           "Port": "44380"
         }
       ],
-      "UpstreamPathTemplate": "/Users"
-    },
+      "UpstreamPathTemplate": "/Users",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "UserToken",
+        "AllowedScopes": []
+      }
+    }
     
   ],
   "GlobalConfiguration": {
